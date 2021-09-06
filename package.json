@@ -1,5 +1,6 @@
 {
     "name": "com.rundotgames.unityutil",
+    "version": "1.0.0",
     "displayName": "RDG Unity Util",
     "author": {
         "name": "Run Dot Games",
@@ -9,7 +10,6 @@
     "keywords": [
         "util"
     ],
-    "version": "1.0.0",
     "unity": "2020.3",
     "description": "Handy Unity Scripts"
 }
