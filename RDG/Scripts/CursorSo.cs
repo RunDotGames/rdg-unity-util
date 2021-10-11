@@ -80,9 +80,7 @@ namespace RDG.UnityUtil {
 
         private Texture2D GetTexture(Vector2Int position) {
             var start = ScaleVectors(position, config.sheet.tileSize + config.sheet.tileSpacing);
-            var dest = new Texture2D(config.sheet.tileSize.x, config.sheet.tileSize.y, TextureFormat.RGBA32, false){
-                alphaIsTransparency = true
-            };
+            var dest = new Texture2D(config.sheet.tileSize.x, config.sheet.tileSize.y, TextureFormat.RGBA32, false);
             Graphics.CopyTexture(config.sheet.texture, 0, 0, start.x, start.y, config.sheet.tileSize.x, config.sheet.tileSize.y, dest, 0, 0, 0, 0);
             return dest;
         }

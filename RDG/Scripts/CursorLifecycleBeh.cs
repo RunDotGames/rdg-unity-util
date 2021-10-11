@@ -3,8 +3,9 @@ using UnityEngine;
 
 namespace RDG.UnityUtil {
   
-  [AddComponentMenu("RDG/Util/Cursor")]
-  public class CursorBeh : MonoBehaviour {
+  
+  [AddComponentMenu("RDG/Util/Cursor Lifecycle")]
+  public class CursorLifecycleBeh : MonoBehaviour {
 
     public CursorSo cursor;
 
