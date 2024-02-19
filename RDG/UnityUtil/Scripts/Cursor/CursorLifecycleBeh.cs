@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace RDG.UnityUtil {
+namespace RDG.UnityUtil.Scripts.Cursor {
   
   
   [AddComponentMenu("RDG/Util/Cursor Lifecycle")]

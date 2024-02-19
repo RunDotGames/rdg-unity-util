@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace RDG.UnityUtil {
+namespace RDG.UnityUtil.Scripts.Cursor {
 
     public enum CursorState {
         Default, Interact, InteractVariant1, InteractVariant2,
@@ -48,7 +48,8 @@ namespace RDG.UnityUtil {
     }
     
     [CreateAssetMenu(menuName = "RDG/Util/Cursor")]
-    public class CursorSo : ScriptableObject {
+    public class 
+        CursorSo : ScriptableObject {
         
         public CursorConfig config;
 
@@ -144,12 +145,12 @@ namespace RDG.UnityUtil {
         private void ApplyCursor() {
             var item = stateToItem[currentState];
             if (item == null) {
-                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                UnityEngine.Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 return;
             }
             
             var texture = (item.HasDown && isDown) ? item.TextureDown : item.Texture;
-            Cursor.SetCursor(texture, Vector2.zero, CursorMode.Auto);   
+            UnityEngine.Cursor.SetCursor(texture, Vector2.zero, CursorMode.Auto);   
         }
     }
 }
