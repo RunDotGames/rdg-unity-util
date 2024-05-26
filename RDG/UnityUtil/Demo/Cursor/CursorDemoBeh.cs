@@ -6,13 +6,13 @@ using UnityEngine.EventSystems;
 namespace RDG.UnityUtil {
   public class CursorDemoBeh: MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
 
-    public CursorSo cursor;
-    public CursorState state;
+    public CursorRegistrySo cursors;
+    public CursorInteractionSo interaction;
     
     private Action releaseCursor;
     
     public void OnPointerEnter(PointerEventData eventData) {
-      releaseCursor = cursor.Push(state);
+      releaseCursor = cursors.Push(interaction);
     }
     
     public void OnPointerExit(PointerEventData eventData) {

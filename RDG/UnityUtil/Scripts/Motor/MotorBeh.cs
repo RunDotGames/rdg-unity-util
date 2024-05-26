@@ -24,7 +24,7 @@ namespace RDG.Util.Scripts.Motor {
       Vector3.left, Vector3.zero, Vector3.right, Vector3.forward, Vector3.back
     };
     
-    private MotorSo motors;
+    [SerializeField] private MotorSo motors;
     [SerializeField] private MotorConfig config;
     [SerializeField] private MotorEvents events;
     [SerializeField] private Rigidbody body;
@@ -47,7 +47,7 @@ namespace RDG.Util.Scripts.Motor {
     public void Start() {
       body.constraints = FREEZE_ROTATION;
       myGround = body.GetComponentsInChildren<GroundBeh>();
-      groundLayerMask = LayerMask.GetMask(motors.Config.groundLayerName);
+      groundLayerMask = motors.GroundLayerMask;
     }
 
     public void RequestDriveDirection(Vector2 dir) {
@@ -92,7 +92,8 @@ namespace RDG.Util.Scripts.Motor {
         IsJumping = false,
         RemainingDistance = config.moveSpeed * Time.fixedDeltaTime
       };
-
+      
+      Debug.DrawLine(info.Position, info.Position + (info.ForwardNormal * 10), Color.magenta);
       UpdateStateForDash(info);
       UpdateStateForJumpUp(info);
       UpdateStateForForwardRotation(info);
@@ -101,7 +102,7 @@ namespace RDG.Util.Scripts.Motor {
       UpdateStateForForwardMove(info);
       UpdateStateForFalling(info);
       UpdateStateForGroundLanding(info);
-
+      Debug.DrawLine(info.Position, info.Position + (info.ForwardNormal * 5), Color.cyan);
       body.MovePosition(info.Position);
       body.MoveRotation(info.Rotation);
 

@@ -7,7 +7,13 @@ namespace RDG.UnityUtil.Scripts {
   public class DelayedDestroyBeh : MonoBehaviour {
 
     [SerializeField] private float delaySeconds = 10;
-    
+    [SerializeField] private bool triggerOnAwake;
+
+    public void Awake() {
+      if (!triggerOnAwake) return;
+      
+      DestroyDelayed();
+    }
     public void DestroyDelayed() {
       TaskUtils.WaitCoroutine(this, delaySeconds).ContinueWith((_) => {
         Destroy(gameObject);

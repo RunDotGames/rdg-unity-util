@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.Events;
 
 namespace RDG.UnityUtil.Scripts.Cursor {
-
-    public enum CursorState {
-        Default, Interact, InteractVariant1, InteractVariant2,
-    }
     
     [Serializable]
     public class CursorTileSheet {
@@ -18,17 +15,19 @@ namespace RDG.UnityUtil.Scripts.Cursor {
 
     [Serializable]
     public class CursorStateTile {
-        public string name;
+        public CursorInteractionSo interaction;
         //Tile Position in Sheet from Bottom Left indexed from 0
         public Vector2Int position;
-        public CursorState state;
         public bool hasDownTile;
         public Vector2Int downPosition;
+        public Vector2 hotSpot;
+        public Vector2 hotSpotDown;
     }
     
     [Serializable]
     public class CursorConfig {
         public CursorTileSheet sheet;
+        public CursorInteractionSo defaultInteraction;
         public CursorStateTile[] tiles;
     }
 
@@ -36,47 +35,54 @@ namespace RDG.UnityUtil.Scripts.Cursor {
         public Texture2D Texture;
         public Texture2D TextureDown;
         public bool HasDown;
+        public Vector2 HotSpot;
+        public Vector2 HotSpotDown;
     }
 
     internal class CursorTicket {
-        public CursorTicket(long index, CursorState state) {
+        public CursorTicket(long index, CursorInteractionSo interaction) {
             Index = index;
-            State = state;
+            Interaction = interaction;
         }
         public readonly long Index;
-        public readonly CursorState State;
+        public readonly CursorInteractionSo Interaction;
+        public readonly Action<bool> OnDownChange;
     }
     
-    [CreateAssetMenu(menuName = "RDG/Util/Cursor")]
-    public class 
-        CursorSo : ScriptableObject {
+    [CreateAssetMenu(menuName = "RDG/Util/Cursor/CursorRegistry")]
+    public class CursorRegistrySo : ScriptableObject {
         
         public CursorConfig config;
 
-        private Dictionary<CursorState, CursorItem> stateToItem;
+        public UnityEvent<bool> onDownChange;
+        
+        private Dictionary<string, CursorItem> stateToItem;
         private List<CursorTicket> tickets;
         private long nextIndex;
-        private CursorState currentState;
+        private CursorInteractionSo currentInteraction;
         private bool isDown;
         
+        
         internal void Reset() {
-            stateToItem = new Dictionary<CursorState, CursorItem>();
+            stateToItem = new Dictionary<string, CursorItem>();
             foreach (var tile in config.tiles) {
                 var texture = GetTexture(tile.position);
                 Texture2D textureDown = null;
                 if (tile.hasDownTile) {
                     textureDown = GetTexture(tile.downPosition);
                 }
-                stateToItem[tile.state] = new CursorItem(){
+                stateToItem[tile.interaction.name] = new CursorItem(){
                     Texture = texture,
                     TextureDown = textureDown,
                     HasDown = tile.hasDownTile,
+                    HotSpot = tile.hotSpot,
+                    HotSpotDown = tile.hotSpotDown,
                 };
             }
             isDown = false;
             nextIndex = 0;
             tickets = new List<CursorTicket>();
-            Push(CursorState.Default);
+            Push(config.defaultInteraction);
         }
 
         private Texture2D GetTexture(Vector2Int position) {
@@ -91,17 +97,18 @@ namespace RDG.UnityUtil.Scripts.Cursor {
             return first;
         }
 
-        public Action Push(CursorState state) {
+        public Action Push(CursorInteractionSo interaction) {
             if (tickets == null) {
                 Reset();    
             }
-            var ticket = new CursorTicket(nextIndex++, state);
-            tickets.Add(ticket);
+            var ticket = new CursorTicket(nextIndex++, interaction);
+            tickets?.Add(ticket);
+            UpdateState(ticket.Interaction);
+            return PopAction;
+
             void PopAction() {
                 Pop(ticket);
             }
-            UpdateState(ticket.State);
-            return PopAction;
         }
 
         private void Pop(CursorTicket ticket) {
@@ -111,13 +118,13 @@ namespace RDG.UnityUtil.Scripts.Cursor {
             }
             
             tickets.RemoveAt(ticketIndex);
-            UpdateState(tickets.Last().State);
+            UpdateState(tickets.Last().Interaction);
         }
 
-        private void UpdateState(CursorState requested) {
-            var oldState = currentState;
-            currentState = requested;
-            if (currentState == oldState) {
+        private void UpdateState(CursorInteractionSo requested) {
+            var oldState = currentInteraction;
+            currentInteraction = requested;
+            if (currentInteraction == oldState) {
                 return;
             }
             
@@ -135,22 +142,22 @@ namespace RDG.UnityUtil.Scripts.Cursor {
         private void UpdateDown(bool requested) {
             var wasDown = isDown;
             isDown = requested;
-            if (wasDown == isDown) {
-                return;
-            }
-
+            if (wasDown == isDown) return;
+            
+            onDownChange?.Invoke(isDown);
             ApplyCursor();
         }
         
         private void ApplyCursor() {
-            var item = stateToItem[currentState];
+            var item = stateToItem[currentInteraction.name];
             if (item == null) {
                 UnityEngine.Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 return;
             }
             
             var texture = (item.HasDown && isDown) ? item.TextureDown : item.Texture;
-            UnityEngine.Cursor.SetCursor(texture, Vector2.zero, CursorMode.Auto);   
+            var hotSpot = (item.HasDown && isDown) ? item.HotSpotDown : item.HotSpot;
+            UnityEngine.Cursor.SetCursor(texture, hotSpot, CursorMode.Auto);   
         }
     }
 }

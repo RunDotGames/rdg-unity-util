@@ -17,24 +17,21 @@ MonoBehaviour:
       texture: {fileID: 2800000, guid: 94549d2850ec8cb49a888ce970d1897c, type: 3}
       tileSize: {x: 16, y: 16}
       tileSpacing: {x: 2, y: 2}
+    defaultInteraction: {fileID: 11400000, guid: b19008a26f54c574d90af9f0efba9caf, type: 2}
     tiles:
-    - name: Default
+    - interaction: {fileID: 11400000, guid: b19008a26f54c574d90af9f0efba9caf, type: 2}
       position: {x: 2, y: 0}
-      state: 0
       hasDownTile: 0
       downPosition: {x: 0, y: 0}
-    - name: Interact
+    - interaction: {fileID: 11400000, guid: f53df8e08e4b06d43abff1a554722619, type: 2}
       position: {x: 0, y: 7}
-      state: 1
       hasDownTile: 0
       downPosition: {x: 0, y: 0}
-    - name: Interact Varient 1
+    - interaction: {fileID: 11400000, guid: 9a84804fe9e3efe49a5ff1a9f8c06fab, type: 2}
       position: {x: 10, y: 7}
-      state: 2
       hasDownTile: 1
       downPosition: {x: 11, y: 7}
-    - name: Interact Varient 2
+    - interaction: {fileID: 11400000, guid: 04eebed4d57c1d944b24ac0dd4a84a76, type: 2}
       position: {x: 0, y: 6}
-      state: 3
       hasDownTile: 0
       downPosition: {x: 0, y: 0}

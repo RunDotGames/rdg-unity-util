@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RDG.Util.Scripts.Motor {
@@ -12,11 +13,12 @@ namespace RDG.Util.Scripts.Motor {
     private readonly Dictionary<string, Ground> nameToGround = new Dictionary<string, Ground>();
 
     public void AddGround(Ground ground) {
-      ground.Collider.gameObject.layer = GroundLayerMask;
+      ground.Collider.gameObject.layer = GroundLayer;
       nameToGround.Add(ground.Collider.name, ground);
     }
     
-    public LayerMask GroundLayerMask => LayerMask.NameToLayer(config.groundLayerName);
+    public int GroundLayer => LayerMask.NameToLayer(config.groundLayerName);
+    public int GroundLayerMask => LayerMask.GetMask(config.groundLayerName);
     
     public void RemoveGround(Ground ground) {
       nameToGround.Remove(ground.Collider.name);

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.AI;
 
 namespace RDG.UnityUtil.Scripts {
@@ -10,6 +11,7 @@ namespace RDG.UnityUtil.Scripts {
 
     private int pathPoint = int.MaxValue;
     private NavMeshPath path;
+    private Action arrivalAction;
     
     public NavMeshFollower(Transform myTransform, float arrivalDistance) {
       this.myTransform = myTransform;
@@ -26,6 +28,8 @@ namespace RDG.UnityUtil.Scripts {
       }
       
       if (pathPoint >= path.corners.Length) {
+        arrivalAction?.Invoke();
+        arrivalAction = null;
         return Vector2.zero;
       }
       
@@ -38,7 +42,13 @@ namespace RDG.UnityUtil.Scripts {
     
     
     // Returns true if re-navigation was successful, false otherwise (maintains old path on fail)
-    public bool NavTo(Vector3 position) {
+    public bool NavTo(Vector3 position, Action onArrival = null) {
+      var distance = (myTransform.position - position).magnitude;
+      if (distance < arrivalDistance) {
+        arrivalAction?.Invoke();
+        return true;
+      }
+      
       var newPath = new NavMeshPath();
       NavMesh.CalculatePath(myTransform.position, position, NavMesh.AllAreas, newPath);
       if (newPath.status != NavMeshPathStatus.PathComplete) {
@@ -46,6 +56,7 @@ namespace RDG.UnityUtil.Scripts {
       }
 
       pathPoint = 0;
+      arrivalAction = onArrival;
       path = newPath;
       return true;
     }
